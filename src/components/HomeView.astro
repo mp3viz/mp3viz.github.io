@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AudioVisualizerIsland from './AudioVisualizerIsland';
+import { TRANSLATIONS, type Locale, getLocalizedPath } from '../i18n/translations';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = TRANSLATIONS[locale];
+const siteOrigin = 'https://mp3viz.github.io';
+const canonicalUrl = new URL(getLocalizedPath(locale, ''), siteOrigin).toString();
+const hireUrl = new URL(getLocalizedPath('en', 'hire-me/'), siteOrigin).toString();
+
+const webAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'MP3Viz',
+  url: canonicalUrl,
+  description: t.home.description,
+  applicationCategory: 'MultimediaApplication',
+  operatingSystem: 'Any',
+  inLanguage: locale,
+  isAccessibleForFree: true,
+  browserRequirements: 'Requires HTML5 Canvas, Web Audio API, and WebCodecs or MediaRecorder',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    'Real-time 2048-point Web Audio FFT sub-bass beat detection',
+    '4 beat-reactive styles: Bars Spectrum, Radial Neon Ring, Mirrored Wave, Particle Beat Pulse',
+    '16:9 YouTube, 9:16 Shorts/TikTok, and 1:1 Square video aspect ratios',
+    '100% client-side WebCodecs MP4 video export with zero watermarks and zero server uploads',
+  ],
+  creator: {
+    '@type': 'Person',
+    name: 'Kishara Dilshan',
+    url: hireUrl,
+  },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: t.home.faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  locale={locale}
+  route=""
+  title={t.home.title}
+  description={t.home.description}
+  schemas={[webAppSchema, faqSchema]}
+>
+  <!-- Above-the-Fold Studio Hero -->
+  <section class="mx-auto max-w-6xl px-4 pt-7 pb-14 sm:px-6 sm:pt-10 sm:pb-16">
+    <div class="mx-auto max-w-3xl text-center mb-6 sm:mb-8">
+      <h1 class="text-2xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] lg:leading-[1.15]">
+        {t.home.h1}
+      </h1>
+      <p class="mt-3 text-sm sm:text-base lg:text-lg leading-relaxed text-ink-muted">
+        {t.home.heroSubtitle}
+      </p>
+    </div>
+
+    <!-- Hydrated Beat-Reactive Audio Visualizer & MP4 Video Exporter -->
+    <AudioVisualizerIsland client:load strings={t.studio} />
+  </section>
+
+  <!-- Below-the-Fold Helpful 4-Question FAQ -->
+  <section
+    aria-labelledby="faq-heading"
+    class="border-t border-line bg-subtle/45 py-14 sm:py-20"
+  >
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <div class="text-center mb-10">
+        <h2 id="faq-heading" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+          {t.home.faqHeading}
+        </h2>
+        <p class="mt-2.5 text-sm sm:text-base text-ink-muted">
+          {t.home.faqIntro}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2">
+        {t.home.faqs.map((faq) => (
+          <article class="rounded-2xl border border-line bg-card p-6 shadow-xs studio-transition">
+            <h3 class="text-base sm:text-lg font-bold leading-snug text-ink">
+              {faq.question}
+            </h3>
+            <p class="mt-2.5 text-sm leading-relaxed text-ink-muted">
+              {faq.answer}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

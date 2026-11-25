@@ -1,0 +1,14 @@
+---
+import HomeView from '../../components/HomeView.astro';
+import { NON_DEFAULT_LOCALES, type Locale } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return NON_DEFAULT_LOCALES.map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params;
+---
+
+<HomeView locale={lang as Locale} />

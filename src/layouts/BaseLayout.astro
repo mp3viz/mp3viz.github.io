@@ -1,0 +1,200 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { LANGUAGES, type Locale, getLocalizedPath } from '../i18n/translations';
+
+interface Props {
+  locale: Locale;
+  route: '' | 'how-to-use/' | 'hire-me/';
+  title: string;
+  description: string;
+  schemas?: Record<string, unknown>[];
+}
+
+const { locale, route, title, description, schemas = [] } = Astro.props;
+
+const siteOrigin = 'https://mp3viz.github.io';
+const canonicalPath = getLocalizedPath(locale, route);
+const canonicalUrl = new URL(canonicalPath, siteOrigin).toString();
+const xDefaultUrl = new URL(getLocalizedPath('en', route), siteOrigin).toString();
+const ogImageUrl = `${siteOrigin}/og-image.png`;
+const currentLang = LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0];
+---
+
+<!doctype html>
+<html lang={locale} data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Anti-FOUC Theme Initialization -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var active = stored === 'dark' || stored === 'light' ? stored : (sysDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', active);
+          document.documentElement.classList.toggle('dark', active === 'dark');
+        } catch (err) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
+    <!-- Analytics placeholder: add GTM/GA4 snippet here in the future -->
+
+    <!-- Canonical & Hreflang Alternates -->
+    <link rel="canonical" href={canonicalUrl} />
+    {LANGUAGES.map((lang) => (
+      <link
+        rel="alternate"
+        hreflang={lang.code}
+        href={new URL(getLocalizedPath(lang.code, route), siteOrigin).toString()}
+      />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MP3Viz" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={currentLang.ogLocale} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MP3Viz — Beat-Reactive Music Visualizer & Video Maker" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- PWA & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#5E4FA2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="MP3Viz" />
+
+    <!-- Structured Data (JSON-LD) -->
+    {schemas.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+
+    <slot name="head" />
+  </head>
+
+  <body class="bg-page text-ink antialiased selection:bg-accent selection:text-accent-fg">
+    <Navbar locale={locale} route={route} />
+
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer locale={locale} />
+
+    <!-- Lightweight Vanilla UI & Offline PWA Controller (0 KB External Framework Overhead) -->
+    <script is:inline>
+      (function () {
+        // Theme toggle
+        var themeBtn = document.getElementById('theme-toggle-btn');
+        if (themeBtn) {
+          themeBtn.addEventListener('click', function () {
+            var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            document.documentElement.classList.toggle('dark', next === 'dark');
+            try {
+              localStorage.setItem('theme', next);
+            } catch (e) {}
+          });
+        }
+
+        // Minimal navbar secondary options toggle menu
+        var moreBtn = document.getElementById('nav-more-btn');
+        var morePanel = document.getElementById('nav-more-panel');
+        var moreRoot = document.getElementById('nav-more-root');
+        var iconOpen = document.getElementById('nav-more-icon-open');
+        var iconClose = document.getElementById('nav-more-icon-close');
+
+        function setMoreMenuOpen(open) {
+          if (!moreBtn || !morePanel) return;
+          moreBtn.setAttribute('aria-expanded', String(open));
+          morePanel.classList.toggle('hidden', !open);
+          if (iconOpen) iconOpen.classList.toggle('hidden', open);
+          if (iconClose) iconClose.classList.toggle('hidden', !open);
+        }
+
+        if (moreBtn && morePanel && moreRoot) {
+          moreBtn.addEventListener('click', function (ev) {
+            ev.stopPropagation();
+            var isOpen = moreBtn.getAttribute('aria-expanded') === 'true';
+            setMoreMenuOpen(!isOpen);
+          });
+          document.addEventListener('click', function (ev) {
+            if (!moreRoot.contains(ev.target)) {
+              setMoreMenuOpen(false);
+            }
+          });
+          document.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Escape') {
+              setMoreMenuOpen(false);
+            }
+          });
+        }
+
+        // Offline PWA Service Worker + Install Prompt
+        var deferredPrompt = null;
+        var installBtn = document.getElementById('pwa-install-btn');
+        var modal = document.getElementById('pwa-guide-modal');
+        var closeBtn = document.getElementById('pwa-guide-close');
+        var okBtn = document.getElementById('pwa-guide-ok');
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+          e.preventDefault();
+          deferredPrompt = e;
+        });
+
+        function closeModal() {
+          if (modal) modal.classList.add('hidden');
+        }
+
+        if (installBtn) {
+          installBtn.addEventListener('click', function () {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              deferredPrompt.userChoice.finally(function () {
+                deferredPrompt = null;
+              });
+            } else if (modal) {
+              modal.classList.remove('hidden');
+            }
+          });
+        }
+
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (okBtn) okBtn.addEventListener('click', closeModal);
+        if (modal) {
+          modal.addEventListener('click', function (ev) {
+            if (ev.target === modal) closeModal();
+          });
+        }
+
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () {});
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

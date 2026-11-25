@@ -1,0 +1,292 @@
+---
+import { LANGUAGES, TRANSLATIONS, type Locale, getLocalizedPath } from '../i18n/translations';
+
+interface Props {
+  locale: Locale;
+  route: '' | 'how-to-use/' | 'hire-me/';
+}
+
+const { locale, route } = Astro.props;
+const t = TRANSLATIONS[locale];
+
+const homeHref = getLocalizedPath(locale, '');
+const howToHref = getLocalizedPath(locale, 'how-to-use/');
+const hireHref = getLocalizedPath(locale, 'hire-me/');
+
+const isHome = route === '';
+const isHowTo = route === 'how-to-use/';
+const isHire = route === 'hire-me/';
+---
+
+<header class="sticky top-0 z-40 w-full border-b border-line bg-card/95 backdrop-blur-md studio-transition">
+  <nav
+    aria-label="Primary"
+    class="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 sm:px-6 lg:py-2.5"
+  >
+    <!-- Brand Logo -->
+    <a
+      href={homeHref}
+      aria-label={`MP3Viz — ${t.nav.home}`}
+      class="group inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2.5 rounded-xl px-2 text-ink hover:bg-subtle studio-transition lg:justify-start"
+    >
+      <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-fg shadow-xs group-hover:scale-105 studio-transition">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" stroke-opacity="0.35" />
+          <path d="M8 14v-4" />
+          <path d="M12 16.5v-9" />
+          <path d="M16 14v-4" />
+        </svg>
+      </span>
+      <span class="hidden text-lg font-bold tracking-tight text-ink lg:inline">
+        MP3Viz
+      </span>
+    </a>
+
+    <!-- Minimal Visible Main Navigation Links Only -->
+    <div class="flex items-center gap-1 sm:gap-1.5">
+      <a
+        href={homeHref}
+        aria-label={t.nav.home}
+        aria-current={isHome ? 'page' : undefined}
+        class:list={[
+          'inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2 rounded-xl px-3 lg:px-4 text-sm font-semibold whitespace-nowrap studio-transition',
+          isHome
+            ? 'bg-accent text-accent-fg shadow-xs'
+            : 'text-ink-muted hover:bg-subtle hover:text-ink',
+        ]}
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+        <span class="hidden lg:inline">{t.nav.home}</span>
+      </a>
+
+      <a
+        href={howToHref}
+        aria-label={t.nav.howToUse}
+        aria-current={isHowTo ? 'page' : undefined}
+        class:list={[
+          'inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2 rounded-xl px-3 lg:px-4 text-sm font-semibold whitespace-nowrap studio-transition',
+          isHowTo
+            ? 'bg-accent text-accent-fg shadow-xs'
+            : 'text-ink-muted hover:bg-subtle hover:text-ink',
+        ]}
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          <path d="m10 8 5 3-5 3V8z" />
+        </svg>
+        <span class="hidden lg:inline">{t.nav.howToUse}</span>
+      </a>
+
+      <a
+        href={hireHref}
+        aria-label={t.nav.hireMe}
+        aria-current={isHire ? 'page' : undefined}
+        class:list={[
+          'inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2 rounded-xl px-3 lg:px-4 text-sm font-semibold whitespace-nowrap studio-transition',
+          isHire
+            ? 'bg-accent text-accent-fg shadow-xs'
+            : 'text-ink-muted hover:bg-subtle hover:text-ink',
+        ]}
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+          <path d="M12 12v.01" />
+          <path d="M2 12a20 20 0 0 0 20 0" />
+        </svg>
+        <span class="hidden lg:inline">{t.nav.hireMe}</span>
+      </a>
+    </div>
+
+    <!-- Single Minimal Toggle Menu for Secondary Options -->
+    <div class="relative" id="nav-more-root">
+      <button
+        type="button"
+        id="nav-more-btn"
+        aria-label={`${t.nav.languageLabel} & ${t.nav.themeToggleLabel}`}
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-controls="nav-more-panel"
+        class="inline-flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl border border-line bg-page text-ink hover:bg-subtle studio-transition"
+      >
+        <!-- Minimal Sliders/Menu Icon -->
+        <svg id="nav-more-icon-open" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="20" y2="18" />
+          <circle cx="9" cy="6" r="2" fill="currentColor" />
+          <circle cx="15" cy="12" r="2" fill="currentColor" />
+          <circle cx="10" cy="18" r="2" fill="currentColor" />
+        </svg>
+        <!-- Close Icon -->
+        <svg id="nav-more-icon-close" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <!-- Clean Toggle Popover Panel Containing Theme, Languages, PWA, Support & GitHub -->
+      <div
+        id="nav-more-panel"
+        role="region"
+        aria-label="Studio settings and links"
+        class="hidden absolute right-0 mt-2.5 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-3xl border border-line bg-card p-4 shadow-studio dark:shadow-studio-dark z-50 space-y-3.5"
+      >
+        <!-- Row 1: Light/Dark Theme Toggle + GitHub Icon -->
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="theme-toggle-btn"
+            aria-label={t.nav.themeToggleLabel}
+            class="flex min-h-[48px] min-w-0 flex-1 items-center justify-between gap-2.5 rounded-2xl border border-line bg-page px-3.5 text-sm font-semibold text-ink hover:bg-subtle studio-transition"
+          >
+            <span class="truncate">{t.nav.themeToggleLabel}</span>
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-subtle text-ink">
+              <svg class="hidden dark:block h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+              <svg class="block dark:hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+              </svg>
+            </span>
+          </button>
+
+          <!-- GitHub Repository Link (Git icon ONLY) -->
+          <a
+            href="https://github.com/mp3viz/mp3viz.github.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View source code on GitHub"
+            class="inline-flex min-h-[48px] min-w-[48px] shrink-0 items-center justify-center rounded-2xl border border-line bg-page text-ink hover:bg-subtle studio-transition"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Row 2: 8-Language Selector Grid -->
+        <div class="border-t border-line pt-3">
+          <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-muted">
+            {t.nav.languageLabel}
+          </span>
+          <ul class="grid grid-cols-2 gap-1.5" aria-label={t.nav.languageLabel}>
+            {LANGUAGES.map((lang) => {
+              const active = lang.code === locale;
+              return (
+                <li>
+                  <a
+                    href={getLocalizedPath(lang.code, route)}
+                    hreflang={lang.code}
+                    lang={lang.code}
+                    aria-current={active ? 'true' : undefined}
+                    class:list={[
+                      'flex min-h-[40px] items-center justify-between rounded-xl px-3 py-1.5 text-xs font-semibold studio-transition',
+                      active
+                        ? 'bg-accent text-accent-fg'
+                        : 'border border-line bg-page text-ink hover:bg-subtle',
+                    ]}
+                  >
+                    <span class="truncate">{lang.label}</span>
+                    <span class="uppercase opacity-75">{lang.code}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <!-- Row 3: Offline PWA Install + Support the Developer -->
+        <div class="space-y-2 border-t border-line pt-3">
+          <button
+            type="button"
+            id="pwa-install-btn"
+            aria-label={t.nav.installAppAria}
+            data-installed-toast={t.nav.installedToast}
+            class="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-line bg-subtle px-4 text-sm font-semibold text-ink hover:border-accent studio-transition"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="2" width="14" height="20" rx="2.5" />
+              <path d="M12 8v6" />
+              <path d="M9 11h6" />
+              <path d="M12 18h.01" />
+            </svg>
+            <span>{t.nav.installApp}</span>
+          </button>
+
+          <a
+            href="https://kisharadilshan.gumroad.com/coffee"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.nav.supportDevAria}
+            class="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-accent px-4 text-sm font-semibold text-accent-fg hover:bg-accent-hover shadow-xs studio-transition"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+              <line x1="6" y1="2" x2="6" y2="4" />
+              <line x1="10" y1="2" x2="10" y2="4" />
+              <line x1="14" y1="2" x2="14" y2="4" />
+            </svg>
+            <span>{t.nav.supportDev}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Clean Offline PWA / iOS Install Popover Dialog -->
+  <div
+    id="pwa-guide-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pwa-guide-title"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs"
+  >
+    <div class="w-full max-w-md rounded-3xl border border-line bg-card p-6 shadow-studio dark:shadow-studio-dark">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-fg">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="2" width="14" height="20" rx="2.5" />
+              <path d="M12 8v6" />
+              <path d="M9 11h6" />
+            </svg>
+          </span>
+          <h2 id="pwa-guide-title" class="text-lg font-bold text-ink">
+            {t.nav.iosInstallTitle}
+          </h2>
+        </div>
+        <button
+          type="button"
+          id="pwa-guide-close"
+          aria-label={t.nav.closeLabel}
+          class="inline-flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl text-ink-muted hover:bg-subtle hover:text-ink studio-transition"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <p class="mt-4 text-sm leading-relaxed text-ink-muted">
+        {t.nav.iosInstallBody}
+      </p>
+      <div class="mt-6 flex justify-end">
+        <button
+          type="button"
+          id="pwa-guide-ok"
+          class="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-accent px-5 text-sm font-semibold text-accent-fg hover:bg-accent-hover studio-transition"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

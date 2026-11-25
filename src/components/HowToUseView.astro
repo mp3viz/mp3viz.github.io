@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { TRANSLATIONS, type Locale, getLocalizedPath } from '../i18n/translations';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = TRANSLATIONS[locale];
+const siteOrigin = 'https://mp3viz.github.io';
+const homePath = getLocalizedPath(locale, '');
+const currentPath = getLocalizedPath(locale, 'how-to-use/');
+const homeUrl = new URL(homePath, siteOrigin).toString();
+const canonicalUrl = new URL(currentPath, siteOrigin).toString();
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: t.nav.home,
+      item: homeUrl,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: t.howToUse.breadcrumbCurrent,
+      item: canonicalUrl,
+    },
+  ],
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: t.howToUse.h1,
+  description: t.howToUse.description,
+  totalTime: 'PT2M',
+  step: t.howToUse.steps.map((step, index) => ({
+    '@type': 'HowToStep',
+    position: index + 1,
+    name: step.title,
+    text: step.body,
+    url: `${canonicalUrl}#step-${index + 1}`,
+  })),
+};
+---
+
+<BaseLayout
+  locale={locale}
+  route="how-to-use/"
+  title={t.howToUse.title}
+  description={t.howToUse.description}
+  schemas={[breadcrumbSchema, howToSchema]}
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
+    <Breadcrumbs locale={locale} currentLabel={t.howToUse.breadcrumbCurrent} />
+
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-[2.6rem] lg:leading-[1.15]">
+      {t.howToUse.h1}
+    </h1>
+    <p class="mt-4 max-w-2xl text-base sm:text-lg leading-relaxed text-ink-muted">
+      {t.howToUse.intro}
+    </p>
+
+    <!-- 4 Step Cards -->
+    <ol class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      {t.howToUse.steps.map((step, idx) => (
+        <li
+          id={`step-${idx + 1}`}
+          class="flex flex-col rounded-3xl border border-line bg-card p-6 sm:p-7 shadow-xs studio-transition"
+        >
+          <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-accent text-base font-extrabold text-accent-fg shadow-xs">
+            {idx + 1}
+          </div>
+          <h2 class="text-lg sm:text-xl font-bold text-ink">
+            {step.title}
+          </h2>
+          <p class="mt-2.5 text-sm sm:text-base leading-relaxed text-ink-muted">
+            {step.body}
+          </p>
+        </li>
+      ))}
+    </ol>
+
+    <!-- Creator Tips -->
+    <section aria-labelledby="tips-heading" class="mt-14 rounded-3xl border border-line bg-subtle/60 p-6 sm:p-8">
+      <h2 id="tips-heading" class="text-xl sm:text-2xl font-extrabold text-ink">
+        {t.howToUse.tipsHeading}
+      </h2>
+      <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {t.howToUse.tips.map((tip) => (
+          <div class="rounded-2xl border border-line bg-card p-5">
+            <h3 class="text-base font-bold text-ink">{tip.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{tip.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Studio Launch CTA -->
+    <div class="mt-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-line bg-card p-6 text-center sm:flex-row sm:p-8 sm:text-left shadow-studio dark:shadow-studio-dark">
+      <p class="text-lg font-bold text-ink">{t.howToUse.ctaText}</p>
+      <a
+        href={homePath}
+        class="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-bold text-accent-fg hover:bg-accent-hover shadow-sm studio-transition whitespace-nowrap"
+      >
+        <span>{t.howToUse.ctaButton}</span>
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </svg>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
